@@ -101,7 +101,11 @@ main {
 }
 
 .fading-button:hover {
-    opacity: 0.75;
+    opacity: 0.85;
+}
+
+.fading-button:active {
+    opacity: 0.6;
 }
 
 .add-city {
@@ -169,7 +173,7 @@ main {
 @media screen and (max-width: 640px) {
     body {
         width: 90%;
-        margin: 0 auto;
+        /* margin: 0 auto; */
         color: #708089;
     }
 
@@ -217,20 +221,17 @@ main {
         display: none;
     }
 
-    .favorites-title {
-        font-size: 7vw;
+    .update-button-mobile {
+        display: block;
+		width: 15%;
+		height: 11vw;
+        background: url("../images/refresh.png") no-repeat;
+        background-size: contain;
+		border: 0;
     }
 
-    .update-button-image {
-        display: block;
-        width: 15%;
-        height: 11vw;
-        object-fit: contain;		
-        background-color: white;
-        background-image: url("../images/update.png");
-        background-size: contain;
-        background-repeat: no-repeat;
-        border: 0;
+    .favorites-title {
+        font-size: 7vw;
     }
 
     .current-city-tempreture {
@@ -261,11 +262,75 @@ main {
     }
 
     .city-tempreture {
-        font-size: 200%;	
+        font-size: 6vw;	
     }
 
     .city-weather-img {
         height: 7vw;
         width: 7vw;
+        margin-right: 30%;
+    }
+}
+
+@media screen and (min-width: 1080px) {
+	body {
+		width: 864px;
+		margin: 0 auto;
+		color: #708089;
+    }
+    
+    h1 {
+        font-size: 35px;
+    }
+
+    .update-button {
+        font-size: 13px;
+    }
+
+    .current-city-name {
+        font-size: 44px;
+    }
+
+    .current-city-tempreture {
+        font-size: 108px;
+    }
+
+    .weather-property h4 {
+        font-size: 16px;
+    }
+
+    .weather-property p {
+        font-size: 15px;
+    }
+
+    .favorites-title {
+        font-size: 34px;
+    }
+
+    .add-city-input {
+        font-size: 14px;
+    }
+
+    .city-weather-container h3 {
+        font-size: 27px;
+    }   
+    
+    .city-tempreture {
+        font-size: 39px;
+    }
+
+    .city-weather-img {
+        width: 44px;
+        height: 44px;
+    }
+
+    .close-button {
+        width: 44px;
+        height: 44px;
+    }
+
+    .plus-button {
+        width: 44px;
+        height: 44px;
     }
 }
