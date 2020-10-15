@@ -1,0 +1,271 @@
+body {
+    margin: auto;
+    width: 80%;
+    color: #708089;
+    font-family: "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+header {
+    margin-top: 3%;
+    margin-bottom: 3%;
+    display: grid;
+    grid-template-columns: 1fr 25% 1fr;
+}
+
+/* 'Weather Here' */
+h1 {
+    margin: 0;
+    font-size: 3.2vw;
+    font-weight: normal;
+}
+
+.update-button {
+    background-color: #c9d2d7;
+    font-size: 1.2vw;
+    color: inherit;
+    border: 0px;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.update-button-mobile {
+    display: none;
+}
+
+main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 7.5%;
+    row-gap: 5%;
+}
+
+.current-city-name {
+    margin: 0;
+    margin-bottom: 8%;
+    font-size: 4vw;
+    font-weight: bold;
+}
+
+.current-weather-img {
+    float: left;
+    width: 30%;
+    margin-right: 20%;
+    margin-bottom: 5%;
+}
+
+.current-city-tempreture {
+    margin: 0;
+    padding: 0;
+    line-height: 75%;
+    font-size: 10vw;
+    color: #7c7c7c;
+}
+
+.weather-properties-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.weather-property {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1.5%;
+    margin: 1% 0;
+    background-color: #a7afb1;
+    color: #f0fafc;
+}
+
+.weather-property h4 {
+    margin: 4px;
+    font-size: 1.4vw;
+    font-weight: 600;
+}
+
+.weather-property p {
+    margin: 0;
+    padding: 5px;
+    font-size: 1.3vw;
+}
+
+.favorites-title {
+    margin: 0;
+    font-size: 3vw;
+    font-weight: normal;
+}
+
+.fading-button {
+    opacity: 1.0;
+    transition: 0.2s;
+}
+
+.fading-button:hover {
+    opacity: 0.75;
+}
+
+.add-city {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.add-city-input {
+    width: 60%;
+    margin: 0;
+    margin-right: 10px;
+    padding-left: 5%;
+    background-color: #f1f1f1;
+    font-size: 1.2vw;
+    font-weight: 500;
+    border: 0px;
+}
+
+.plus-button {	
+    width: 10%;
+    height: 3.5vw;
+    background: url("../images/plus.png") no-repeat;
+    background-size: contain;
+    border: 0;
+}
+
+.city-weather-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.city-weather-container h3 {
+    margin: 0;
+    margin-right: 10%;
+    font-size: 2.4vw;
+    font-weight: 600;
+}
+
+.city-tempreture {
+    margin: 0;
+    padding: 5px;
+    font-size: 3.5vw;
+    color: #7c7c7c;
+}
+
+.city-weather-img {
+    width: 4vw;
+    height: 4vw;
+    margin-right: 20%;
+}
+
+.close-button {	
+    float: right;
+    width: 4vw;
+    height: 4vw;
+    object-fit: contain;
+    background-color: white;
+    background-image: url("../images/close.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    border: 0;
+}
+
+@media screen and (max-width: 640px) {
+    body {
+        width: 90%;
+        margin: 0 auto;
+        color: #708089;
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    h1 {
+        font-size: 7vw;
+        margin-bottom: 10px;
+    }
+
+    main {
+        grid-template-columns: repeat(1, 1fr);
+        row-gap: 1.3%;
+    }
+
+    .current-city-name {
+        font-size: 7vw;
+        font-weight: 500;
+    }
+
+    .current-weather-img {
+        width: 35%;
+        margin-right: 15%;
+        margin-bottom: 0;
+    }
+
+    .city-weather-container h3 {
+        font-size: 5vw;
+        margin-right: 0;
+    }
+
+    .weather-property h4 {
+        font-size: 3.5vw;
+    }
+
+    .weather-property p {
+        font-size: 3vw
+    }
+
+    .update-button {
+        display: none;
+    }
+
+    .favorites-title {
+        font-size: 7vw;
+    }
+
+    .update-button-image {
+        display: block;
+        width: 15%;
+        height: 11vw;
+        object-fit: contain;		
+        background-color: white;
+        background-image: url("../images/update.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        border: 0;
+    }
+
+    .current-city-tempreture {
+        font-size: 20vw;
+    }
+
+    .add-city {
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .add-city-input {
+        width: 80%;
+        padding: 3.5%;
+        padding-left: 4%;
+        font-size: 3vw;
+        font-weight: normal;
+    }
+
+    .plus-button {
+        width: 8vw;
+        height: 8vw;
+    }
+
+    .close-button {
+        width: 8vw;
+        height: 8vw;
+    }
+
+    .city-tempreture {
+        font-size: 200%;	
+    }
+
+    .city-weather-img {
+        height: 7vw;
+        width: 7vw;
+    }
+}
