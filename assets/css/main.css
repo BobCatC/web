@@ -162,11 +162,8 @@ main {
     float: right;
     width: 4vw;
     height: 4vw;
-    object-fit: contain;
-    background-color: white;
-    background-image: url("../images/close.png");
+    background-image: url("../images/close.png") no-repeat;
     background-size: contain;
-    background-repeat: no-repeat;
     border: 0;
 }
 
