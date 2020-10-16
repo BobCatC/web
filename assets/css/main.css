@@ -162,7 +162,7 @@ main {
     float: right;
     width: 4vw;
     height: 4vw;
-    background-image: url("../images/close.png") no-repeat;
+    background: url("../images/close.png") no-repeat;
     background-size: contain;
     border: 0;
 }
