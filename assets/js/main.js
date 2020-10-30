@@ -18,6 +18,10 @@ class WeatherProperties {
 
         }
 
+        tempretureText() {
+                return `${this.tempreture}°`;
+        }
+
         windText() {
                 return `${this.windSpeed} m/s, ${this.windDirection}`;
         }
@@ -254,7 +258,7 @@ function createCurrentCityUI(properties) {
         template = document.querySelector('#current-city-template');
         content = template.content;
         content.querySelector('.current-city-name').textContent = properties.cityName;
-        content.querySelector('.current-city-tempreture').textContent = properties.tempreture;
+        content.querySelector('.current-city-tempreture').textContent = properties.tempretureText();
         content.querySelector('.current-weather-img').setAttribute('src', properties.iconUrl);
 
         return content.cloneNode(true);
@@ -265,7 +269,7 @@ function createCityUI(properties) {
         template = document.querySelector('#city-template');
         content = template.content;
         content.querySelector('h3').textContent = properties.cityName;
-        content.querySelector('.city-tempreture').textContent = properties.tempreture;
+        content.querySelector('.city-tempreture').textContent = properties.tempretureText();
         content.querySelector('.city-weather-img').setAttribute('src', properties.iconUrl);
         updateElementContent(content.querySelector('.weather-properties-list'), propertiesListUI);
 
