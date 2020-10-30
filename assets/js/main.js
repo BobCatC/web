@@ -184,6 +184,10 @@ function updateElementContent(element, newValue) {
         element.appendChild(newValue);
 }
 
+function replaceDocumentElement(query, html) {
+        updateElementContent(document.querySelector(query), html);
+}
+
 function idForCity(cityName) {
         return `${cityName.replace(' ', '')}-city`;
 }
@@ -199,8 +203,8 @@ function updateCurrentCityWithProperties(properties) {
         cityUI = createCurrentCityUI(properties);
         propertiesUI = createWeatherPropertiesListUI(properties);
 
-        updateElementContent(document.querySelector('.current-city-info-container'), cityUI);
-        updateElementContent(document.querySelector('.current-city-properties-container'), propertiesUI);
+        replaceDocumentElement('.current-city-info-container', cityUI);
+        replaceDocumentElement('.current-city-properties-container', propertiesUI);
 }
 
 function updateFavoriteCities() {
@@ -248,22 +252,24 @@ function removeFavoriteCity(cityName) {
 
 function createCurrentCityUI(properties) {
         template = document.querySelector('#current-city-template');
-        template.content.querySelector('.current-city-name').textContent = properties.cityName;
-        template.content.querySelector('.current-city-tempreture').textContent = properties.tempreture;
-        template.content.querySelector('.current-weather-img').setAttribute('src', properties.iconUrl);
+        content = template.content;
+        content.querySelector('.current-city-name').textContent = properties.cityName;
+        content.querySelector('.current-city-tempreture').textContent = properties.tempreture;
+        content.querySelector('.current-weather-img').setAttribute('src', properties.iconUrl);
 
-        return template.content.cloneNode(true);
+        return content.cloneNode(true);
 }
 
 function createCityUI(properties) {
         propertiesListUI = createWeatherPropertiesListUI(properties);
         template = document.querySelector('#city-template');
-        template.content.querySelector('h3').textContent = properties.cityName;
-        template.content.querySelector('.city-tempreture').textContent = properties.tempreture;
-        template.content.querySelector('.city-weather-img').setAttribute('src', properties.iconUrl);
-        updateElementContent(template.content.querySelector('.weather-properties-list'), propertiesListUI);
+        content = template.content;
+        content.querySelector('h3').textContent = properties.cityName;
+        content.querySelector('.city-tempreture').textContent = properties.tempreture;
+        content.querySelector('.city-weather-img').setAttribute('src', properties.iconUrl);
+        updateElementContent(content.querySelector('.weather-properties-list'), propertiesListUI);
 
-        content = template.content.cloneNode(true);
+        content = content.cloneNode(true);
         content.querySelector('.close-button').addEventListener('click', event => {
                 removeFavoriteCity(properties.cityName)
         });
