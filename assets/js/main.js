@@ -238,7 +238,7 @@ function updateFavoriteCity(cityName, cityUI) {
         } else {
                 section.innerHTML = cityUI.firstElementChild.innerHTML;
                 section.querySelector('.close-button').addEventListener('click', event => {
-                        removeFavoriteCity(properties.cityName)
+                        removeFavoriteCity(cityName)
                 });
         }
 }
