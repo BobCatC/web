@@ -36,12 +36,12 @@ class WeatherProperties {
 
         locationText() {
                 return `[${this.location.latitude} ${this.location.longitude}]`;
-        }    	
+        }
 }
 
 // MARK: - Extensions
 
-Array.prototype.remove = function(item) {
+Array.prototype.remove = function (item) {
         return this.filter(value => {
                 return value != item;
         })
@@ -52,16 +52,16 @@ Array.prototype.remove = function(item) {
 apiKey = 'c49aa141b23994b2563a6b32d32893b1';
 baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
-function fetchWeatherByLocation(latitude, longitude) {
-        return fetch(`${baseUrl}?lat=${latitude}&lon=${longitude}&appid=${apiKey}`)
-                .then(response => response.json())
-                .then(parseWeatherData);
+async function fetchWeatherByLocation(latitude, longitude) {
+        const response = await fetch(`${baseUrl}?lat=${latitude}&lon=${longitude}&appid=${apiKey}`);
+        const data = await response.json();
+        return parseWeatherData(data);
 }
 
-function fetchWeatherByCityName(cityName) {
-        return fetch(`${baseUrl}?q=${cityName}&appid=${apiKey}`)
-                .then(resp => resp.json())
-                .then(parseWeatherData);
+async function fetchWeatherByCityName(cityName) {
+        const response = await fetch(`${baseUrl}?q=${cityName}&appid=${apiKey}`);
+        const data = await response.json();
+        return parseWeatherData(data);
 }
 
 function parseWeatherData(data) {
@@ -106,7 +106,6 @@ function windDirection(deg) {
 // MARK: - Location
 
 defaultLocation = new Location(59.894444, 30.264168);
-LocalData.key = 'local-data';
 
 function getLocation(handler) {
         geolocation = navigator.geolocation;
@@ -121,6 +120,8 @@ function getLocation(handler) {
 
 // MARK: - LocalStorage
 
+LocalData.key = 'local-data';
+
 function getLocalData() {
         localData = localStorage.getItem(LocalData.key);
         if (localData == undefined) {
@@ -134,6 +135,10 @@ function getLocalData() {
 function setLocalData(localData) {
         localData = JSON.stringify(localData);
         localStorage.setItem(LocalData.key, localData);
+}
+
+function cleanLocalData() {
+        localStorage.removeItem(LocalData.key);
 }
 
 function addCityToLocalData(cityName) {
@@ -153,11 +158,7 @@ function cityExistsInLocalData(cityName) {
         return localData.cities.includes(cityName);
 }
 
-function cleanLocalData() {
-        localStorage.removeItem(LocalData.key);
-}
-
-// MARK: - Helpers
+// MARK: - Actions
 
 function addFavoriteCityButtonDidTap(event) {
         input = document.querySelector('.add-city-input');
@@ -176,38 +177,30 @@ function reloadLocationButtonDidTap(event) {
         updateCurrentCity();
 }
 
+// MARK: - Helpers
+
 function updateElementContent(element, newValue) {
         element.innerHTML = '';
         element.appendChild(newValue);
-}
-
-function updateCurrentCity() {
-        getLocation(location => {
-                fetchWeatherByLocation(location.latitude, location.longitude)
-                        .then(properties => {
-                                cityUI = createCurrentCityUI(properties);
-                                propertiesUI = createWeatherPropertiesListUI(properties);
-
-                                updateElementContent(document.querySelector('.current-city-info-container'), cityUI);
-                                updateElementContent(document.querySelector('.current-city-properties-container'), propertiesUI);
-                        })
-        });
 }
 
 function idForCity(cityName) {
         return `${cityName.replace(' ', '')}-city`;
 }
 
-function updateFavoriteCity(cityName, cityUI) {
-        elementId = idForCity(cityName);
-        cityUI.firstElementChild.setAttribute('id', elementId);
-        section = document.querySelector('main').querySelector('#' + elementId);
+function updateCurrentCity() {
+        getLocation(location => {
+                fetchWeatherByLocation(location.latitude, location.longitude)
+                        .then(updateCurrentCityWithProperties)
+        });
+}
 
-        if (section == undefined) {
-                document.querySelector('main').appendChild(cityUI);
-        } else {
-                section.innerHTML = cityUI.firstElementChild.innerHTML
-        }
+function updateCurrentCityWithProperties(properties) {
+        cityUI = createCurrentCityUI(properties);
+        propertiesUI = createWeatherPropertiesListUI(properties);
+
+        updateElementContent(document.querySelector('.current-city-info-container'), cityUI);
+        updateElementContent(document.querySelector('.current-city-properties-container'), propertiesUI);
 }
 
 function updateFavoriteCities() {
@@ -229,6 +222,18 @@ function addFavoriteCity(cityName) {
                         alert("Wrong city name");
                         removeCityFromLocalData(cityName);
                 });
+}
+
+function updateFavoriteCity(cityName, cityUI) {
+        elementId = idForCity(cityName);
+        cityUI.firstElementChild.setAttribute('id', elementId);
+        section = document.querySelector('main').querySelector('#' + elementId);
+
+        if (section == undefined) {
+                document.querySelector('main').appendChild(cityUI);
+        } else {
+                section.innerHTML = cityUI.firstElementChild.innerHTML
+        }
 }
 
 function removeFavoriteCity(cityName) {
@@ -256,8 +261,8 @@ function createCityUI(properties) {
         updateElementContent(template.content.querySelector('.weather-properties-list'), propertiesListUI);
 
         content = template.content.cloneNode(true);
-        content.querySelector('.close-button').addEventListener('click', event => { 
-                removeFavoriteCity(properties.cityName) 
+        content.querySelector('.close-button').addEventListener('click', event => {
+                removeFavoriteCity(properties.cityName)
         });
         return content;
 }
