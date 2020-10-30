@@ -65,6 +65,8 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    padding: 0;
+    list-style-type: none;
 }
 
 .weather-property {
