@@ -220,7 +220,7 @@ function addFavoriteCity(cityName) {
                 .catch(error => {
                         console.log(`Unable to add favorite city: ${error.message}`);
                         alert("Wrong city name");
-                        removeCityFromLocalData(cityName);
+                        removeFavoriteCity(cityName);
                 });
 }
 
@@ -232,7 +232,10 @@ function updateFavoriteCity(cityName, cityUI) {
         if (section == undefined) {
                 document.querySelector('main').appendChild(cityUI);
         } else {
-                section.innerHTML = cityUI.firstElementChild.innerHTML
+                section.innerHTML = cityUI.firstElementChild.innerHTML;
+                section.querySelector('.close-button').addEventListener('click', event => {
+                        removeFavoriteCity(properties.cityName)
+                });
         }
 }
 
