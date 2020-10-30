@@ -206,7 +206,7 @@ function updateFavoriteCity(cityName, cityUI) {
         if (section == undefined) {
                 document.querySelector('main').appendChild(cityUI);
         } else {
-                section.innerHTML = cityUI.innerHTML
+                section.innerHTML = cityUI.firstElementChild.innerHTML
         }
 }
 
@@ -217,8 +217,8 @@ function updateFavoriteCities() {
 }
 
 function addFavoriteCity(cityName) {
-        // loadingCityUI = createLoadingCityUI(cityName);
-        // updateFavoriteCity(cityName, loadingCityUI);
+        loadingCityUI = createLoadingCityUI(cityName);
+        updateFavoriteCity(cityName, loadingCityUI);
         fetchWeatherByCityName(cityName)
                 .then(properties => {
                         cityUI = createCityUI(properties);
