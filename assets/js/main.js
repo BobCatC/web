@@ -57,14 +57,46 @@ apiKey = 'c49aa141b23994b2563a6b32d32893b1';
 baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
 async function fetchWeatherByLocation(latitude, longitude) {
-        const response = await fetch(`${baseUrl}?lat=${latitude}&lon=${longitude}&appid=${apiKey}`);
+        let response;
+        try {
+                response = await fetch(`${baseUrl}?lat=${latitude}&lon=${longitude}&appid=${apiKey}`);
+        } catch (error) {
+                console.log(`Unable to fetch weather: ${error.message}`);
+                alert("Unknown weather API error");
+                const response = undefined;
+        }
+
+        if (response.status != 200) {
+                alert("Unknown weather API error");
+                throw new Error("Unknown weather API error");
+        }
+
         const data = await response.json();
         return parseWeatherData(data);
 }
 
 async function fetchWeatherByCityName(cityName) {
-        const response = await fetch(`${baseUrl}?q=${cityName}&appid=${apiKey}`);
+        let response;
+        try {
+                response = await fetch(`${baseUrl}?q=${cityName}&appid=${apiKey}`);
+
+        } catch (error) {
+                console.log(`Unable to fetch weather: ${error.message}`)
+                alert("Unknown weather API error");
+        }
+
+        if (response.status == 404) {
+                alert("Wrong city name");
+                throw new Error("Wrong city name");
+        }
+
+        if (response.status != 200) {
+                alert("Unknown weather API error")
+                throw new Error("Unknown weather API error")
+        }
+
         const data = await response.json();
+
         return parseWeatherData(data);
 }
 
@@ -165,11 +197,13 @@ function cityExistsInLocalData(cityName) {
 // MARK: - Actions
 
 function addFavoriteCityButtonDidTap(event) {
-        input = document.querySelector('.add-city-input');
+        event.preventDefault()
+        input = event.target.querySelector('.add-city-input');
         cityName = input.value;
         input.value = "";
 
         if (cityExistsInLocalData(cityName)) {
+                alert('Already in favorites!');
                 return;
         }
 
@@ -226,8 +260,6 @@ function addFavoriteCity(cityName) {
                         updateFavoriteCity(cityName, cityUI);
                 })
                 .catch(error => {
-                        console.log(`Unable to add favorite city: ${error.message}`);
-                        alert("Wrong city name");
                         removeFavoriteCity(cityName);
                 });
 }
@@ -301,7 +333,7 @@ function createWeatherPropertiesListUI(properties) {
 
 document.querySelector('.update-button').addEventListener('click', reloadLocationButtonDidTap);
 document.querySelector('.update-button-mobile').addEventListener('click', reloadLocationButtonDidTap);
-document.querySelector('#add-favorite-city').addEventListener('click', addFavoriteCityButtonDidTap);
+document.querySelector('.add-city').addEventListener('submit', addFavoriteCityButtonDidTap);
 
 // cleanLocalData();
 updateCurrentCity();
