@@ -177,19 +177,26 @@ function cleanLocalData() {
         localStorage.removeItem(LocalData.key);
 }
 
+function prepareCityNameForSave(cityName) {
+        return cityName.toLowerCase();
+}
+
 function addCityToLocalData(cityName) {
+        cityName = prepareCityNameForSave(cityName);
         localData = getLocalData();
         localData.cities.push(cityName);
         setLocalData(localData);
 }
 
 function removeCityFromLocalData(cityName) {
+        cityName = prepareCityNameForSave(cityName);
         localData = getLocalData();
         localData.cities = localData.cities.remove(cityName);
         setLocalData(localData);
 }
 
 function cityExistsInLocalData(cityName) {
+        cityName = prepareCityNameForSave(cityName);
         localData = getLocalData();
         return localData.cities.includes(cityName);
 }
