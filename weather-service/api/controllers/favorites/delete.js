@@ -22,7 +22,7 @@ module.exports = {
 
 
   fn: async function ({cityName}) {
-    sails.log.info(`Add ${cityName} to favorites`)
+    sails.log.info(`Delete ${cityName} from favorites`)
     // All done.
     return;
 

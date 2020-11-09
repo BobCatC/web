@@ -11,7 +11,7 @@
 module.exports.routes = {
     "GET /weather/city": "weather/city",
     "GET /weather/coordinates": "weather/coordinates",
-    "GET /favorites": "favorites/getAll",
+    "GET /favorites": "favorites/all",
     "POST /favorites": "favorites/add",
     "DELETE /favorites": "favorites/delete"
 };
