@@ -1,8 +1,8 @@
 {
   "name": "weather-service",
   "private": true,
-  "version": "0.0.0",
-  "description": "a Sails application",
+  "version": "0.0.1",
+  "description": "Backend for Weather UI",
   "keywords": [],
   "dependencies": {
     "sails": "^1.4.0",
@@ -22,9 +22,9 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/aleksandr/weather-service.git"
+    "url": "git@github.com:BobCatC/web.git"
   },
-  "author": "aleksandr",
+  "author": "Aleksandr Pakhomov",
   "license": "",
   "engines": {
     "node": "^14.9"

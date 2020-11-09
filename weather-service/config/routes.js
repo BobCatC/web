@@ -9,6 +9,9 @@
  */
 
 module.exports.routes = {
-
-
+    "GET /weather/city": "weather/city",
+    "GET /weather/coordinates": "weather/coordinates",
+    "GET /favorites": "favorites/getAll",
+    "POST /favorites": "favorites/add",
+    "DELETE /favorites": "favorites/delete"
 };
