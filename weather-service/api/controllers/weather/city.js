@@ -23,6 +23,7 @@ module.exports = {
 
   fn: async function ({q}) {
     sails.log.info(`Get weather by city name with q=${q}`)
+    
     return;
   }
 

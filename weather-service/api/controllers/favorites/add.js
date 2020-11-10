@@ -26,7 +26,7 @@ module.exports = {
     let user = await sails.helpers.getSessionUser(env.req, env.res);
     cityName = await sails.helpers.formatCityName(cityName);
     
-    var favoriteCity = await FavoriteCity.findOne({ user: user.id, cityName: cityName });
+    let favoriteCity = await FavoriteCity.findOne({ user: user.id, cityName: cityName });
 
     if (favoriteCity == undefined) {
       favoriteCity = await FavoriteCity.create({
