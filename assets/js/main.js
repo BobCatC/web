@@ -18,6 +18,10 @@ class WeatherProperties {
 
         }
 
+        tempretureText() {
+                return `${this.tempreture}°`;
+        }
+
         windText() {
                 return `${this.windSpeed} m/s, ${this.windDirection}`;
         }
@@ -36,12 +40,12 @@ class WeatherProperties {
 
         locationText() {
                 return `[${this.location.latitude} ${this.location.longitude}]`;
-        }    	
+        }
 }
 
 // MARK: - Extensions
 
-Array.prototype.remove = function(item) {
+Array.prototype.remove = function (item) {
         return this.filter(value => {
                 return value != item;
         })
@@ -52,16 +56,48 @@ Array.prototype.remove = function(item) {
 apiKey = 'c49aa141b23994b2563a6b32d32893b1';
 baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
-function fetchWeatherByLocation(latitude, longitude) {
-        return fetch(`${baseUrl}?lat=${latitude}&lon=${longitude}&appid=${apiKey}`)
-                .then(response => response.json())
-                .then(parseWeatherData);
+async function fetchWeatherByLocation(latitude, longitude) {
+        let response;
+        try {
+                response = await fetch(`${baseUrl}?lat=${latitude}&lon=${longitude}&appid=${apiKey}`);
+        } catch (error) {
+                console.log(`Unable to fetch weather: ${error.message}`);
+                alert("Unknown weather API error");
+                const response = undefined;
+        }
+
+        if (response.status != 200) {
+                alert("Unknown weather API error");
+                throw new Error("Unknown weather API error");
+        }
+
+        const data = await response.json();
+        return parseWeatherData(data);
 }
 
-function fetchWeatherByCityName(cityName) {
-        return fetch(`${baseUrl}?q=${cityName}&appid=${apiKey}`)
-                .then(resp => resp.json())
-                .then(parseWeatherData);
+async function fetchWeatherByCityName(cityName) {
+        let response;
+        try {
+                response = await fetch(`${baseUrl}?q=${cityName}&appid=${apiKey}`);
+
+        } catch (error) {
+                console.log(`Unable to fetch weather: ${error.message}`)
+                alert("Unknown weather API error");
+        }
+
+        if (response.status == 404) {
+                alert("Wrong city name");
+                throw new Error("Wrong city name");
+        }
+
+        if (response.status != 200) {
+                alert("Unknown weather API error")
+                throw new Error("Unknown weather API error")
+        }
+
+        const data = await response.json();
+
+        return parseWeatherData(data);
 }
 
 function parseWeatherData(data) {
@@ -106,7 +142,6 @@ function windDirection(deg) {
 // MARK: - Location
 
 defaultLocation = new Location(59.894444, 30.264168);
-LocalData.key = 'local-data';
 
 function getLocation(handler) {
         geolocation = navigator.geolocation;
@@ -120,6 +155,8 @@ function getLocation(handler) {
 }
 
 // MARK: - LocalStorage
+
+LocalData.key = 'local-data';
 
 function getLocalData() {
         localData = localStorage.getItem(LocalData.key);
@@ -136,35 +173,44 @@ function setLocalData(localData) {
         localStorage.setItem(LocalData.key, localData);
 }
 
+function cleanLocalData() {
+        localStorage.removeItem(LocalData.key);
+}
+
+function prepareCityNameForSave(cityName) {
+        return cityName.toLowerCase();
+}
+
 function addCityToLocalData(cityName) {
+        cityName = prepareCityNameForSave(cityName);
         localData = getLocalData();
         localData.cities.push(cityName);
         setLocalData(localData);
 }
 
 function removeCityFromLocalData(cityName) {
+        cityName = prepareCityNameForSave(cityName);
         localData = getLocalData();
         localData.cities = localData.cities.remove(cityName);
         setLocalData(localData);
 }
 
 function cityExistsInLocalData(cityName) {
+        cityName = prepareCityNameForSave(cityName);
         localData = getLocalData();
         return localData.cities.includes(cityName);
 }
 
-function cleanLocalData() {
-        localStorage.removeItem(LocalData.key);
-}
-
-// MARK: - Helpers
+// MARK: - Actions
 
 function addFavoriteCityButtonDidTap(event) {
-        input = document.querySelector('.add-city-input');
+        event.preventDefault()
+        input = event.target.querySelector('.add-city-input');
         cityName = input.value;
         input.value = "";
 
         if (cityExistsInLocalData(cityName)) {
+                alert('Already in favorites!');
                 return;
         }
 
@@ -176,26 +222,53 @@ function reloadLocationButtonDidTap(event) {
         updateCurrentCity();
 }
 
+// MARK: - Helpers
+
 function updateElementContent(element, newValue) {
         element.innerHTML = '';
         element.appendChild(newValue);
 }
 
-function updateCurrentCity() {
-        getLocation(location => {
-                fetchWeatherByLocation(location.latitude, location.longitude)
-                        .then(properties => {
-                                cityUI = createCurrentCityUI(properties);
-                                propertiesUI = createWeatherPropertiesListUI(properties);
-
-                                updateElementContent(document.querySelector('.current-city-info-container'), cityUI);
-                                updateElementContent(document.querySelector('.current-city-properties-container'), propertiesUI);
-                        })
-        });
+function replaceDocumentElement(query, html) {
+        updateElementContent(document.querySelector(query), html);
 }
 
 function idForCity(cityName) {
         return `${cityName.replace(' ', '')}-city`;
+}
+
+function updateCurrentCity() {
+        getLocation(location => {
+                fetchWeatherByLocation(location.latitude, location.longitude)
+                        .then(updateCurrentCityWithProperties)
+        });
+}
+
+function updateCurrentCityWithProperties(properties) {
+        cityUI = createCurrentCityUI(properties);
+        propertiesUI = createWeatherPropertiesListUI(properties);
+
+        replaceDocumentElement('.current-city-info-container', cityUI);
+        replaceDocumentElement('.current-city-properties-container', propertiesUI);
+}
+
+function updateFavoriteCities() {
+        localData = getLocalData();
+        console.log(`Creating UI for cities: ${localData.cities}`)
+        localData.cities.forEach(addFavoriteCity);
+}
+
+function addFavoriteCity(cityName) {
+        loadingCityUI = createLoadingCityUI(cityName);
+        updateFavoriteCity(cityName, loadingCityUI);
+        fetchWeatherByCityName(cityName)
+                .then(properties => {
+                        cityUI = createCityUI(properties);
+                        updateFavoriteCity(cityName, cityUI);
+                })
+                .catch(error => {
+                        removeFavoriteCity(cityName);
+                });
 }
 
 function updateFavoriteCity(cityName, cityUI) {
@@ -206,29 +279,11 @@ function updateFavoriteCity(cityName, cityUI) {
         if (section == undefined) {
                 document.querySelector('main').appendChild(cityUI);
         } else {
-                section.innerHTML = cityUI.innerHTML
-        }
-}
-
-function updateFavoriteCities() {
-        localData = getLocalData();
-        console.log(`Creating UI for cities: ${localData.cities}`)
-        localData.cities.forEach(addFavoriteCity);
-}
-
-function addFavoriteCity(cityName) {
-        // loadingCityUI = createLoadingCityUI(cityName);
-        // updateFavoriteCity(cityName, loadingCityUI);
-        fetchWeatherByCityName(cityName)
-                .then(properties => {
-                        cityUI = createCityUI(properties);
-                        updateFavoriteCity(cityName, cityUI);
-                })
-                .catch(error => {
-                        console.log(`Unable to add favorite city: ${error.message}`);
-                        alert("Wrong city name");
-                        removeCityFromLocalData(cityName);
+                section.innerHTML = cityUI.firstElementChild.innerHTML;
+                section.querySelector('.close-button').addEventListener('click', event => {
+                        removeFavoriteCity(cityName)
                 });
+        }
 }
 
 function removeFavoriteCity(cityName) {
@@ -240,24 +295,26 @@ function removeFavoriteCity(cityName) {
 
 function createCurrentCityUI(properties) {
         template = document.querySelector('#current-city-template');
-        template.content.querySelector('.current-city-name').textContent = properties.cityName;
-        template.content.querySelector('.current-city-tempreture').textContent = properties.tempreture;
-        template.content.querySelector('.current-weather-img').setAttribute('src', properties.iconUrl);
+        content = template.content;
+        content.querySelector('.current-city-name').textContent = properties.cityName;
+        content.querySelector('.current-city-tempreture').textContent = properties.tempretureText();
+        content.querySelector('.current-weather-img').setAttribute('src', properties.iconUrl);
 
-        return template.content.cloneNode(true);
+        return content.cloneNode(true);
 }
 
 function createCityUI(properties) {
         propertiesListUI = createWeatherPropertiesListUI(properties);
         template = document.querySelector('#city-template');
-        template.content.querySelector('h3').textContent = properties.cityName;
-        template.content.querySelector('.city-tempreture').textContent = properties.tempreture;
-        template.content.querySelector('.city-weather-img').setAttribute('src', properties.iconUrl);
-        updateElementContent(template.content.querySelector('.weather-properties-list'), propertiesListUI);
+        content = template.content;
+        content.querySelector('h3').textContent = properties.cityName;
+        content.querySelector('.city-tempreture').textContent = properties.tempretureText();
+        content.querySelector('.city-weather-img').setAttribute('src', properties.iconUrl);
+        updateElementContent(content.querySelector('.weather-properties-list'), propertiesListUI);
 
-        content = template.content.cloneNode(true);
-        content.querySelector('.close-button').addEventListener('click', event => { 
-                removeFavoriteCity(properties.cityName) 
+        content = content.cloneNode(true);
+        content.querySelector('.close-button').addEventListener('click', event => {
+                removeFavoriteCity(properties.cityName)
         });
         return content;
 }
@@ -283,7 +340,7 @@ function createWeatherPropertiesListUI(properties) {
 
 document.querySelector('.update-button').addEventListener('click', reloadLocationButtonDidTap);
 document.querySelector('.update-button-mobile').addEventListener('click', reloadLocationButtonDidTap);
-document.querySelector('#add-favorite-city').addEventListener('click', addFavoriteCityButtonDidTap);
+document.querySelector('.add-city').addEventListener('submit', addFavoriteCityButtonDidTap);
 
 // cleanLocalData();
 updateCurrentCity();
