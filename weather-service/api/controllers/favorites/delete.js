@@ -1,11 +1,7 @@
 module.exports = {
-
-
   friendlyName: 'Delete',
 
-
-  description: 'Delete favorites.',
-
+  description: 'Delete favorite city',
 
   inputs: {
     cityName: {
@@ -15,18 +11,22 @@ module.exports = {
     }
   },
 
-
   exits: {
-
+    unauthorized: {
+      statusCode: 401
+    }
   },
 
-
-  fn: async function ({cityName}) {
+  fn: async function ({cityName}, exits, env) {
     sails.log.info(`Delete ${cityName} from favorites`)
-    // All done.
-    return;
+    let user = await sails.helpers.getSessionUser(env.req, env.res);
 
+    if (user == undefined) {
+      return exits.unauthorized()
+    }
+
+    await FavoriteCity.destroy({ user: user.id, cityName: cityName });
+
+    return exits.success();
   }
-
-
 };
