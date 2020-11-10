@@ -53,13 +53,12 @@ Array.prototype.remove = function (item) {
 
 // MARK: - Weather API
 
-apiKey = 'c49aa141b23994b2563a6b32d32893b1';
-baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
+baseUrl = 'http://localhost:1337';
 
 async function fetchWeatherByLocation(latitude, longitude) {
         let response;
         try {
-                response = await fetch(`${baseUrl}?lat=${latitude}&lon=${longitude}&appid=${apiKey}`);
+                response = await fetch(`${baseUrl}/weather/coordinates?lat=${latitude}&lon=${longitude}`);
         } catch (error) {
                 console.log(`Unable to fetch weather: ${error.message}`);
                 alert("Unknown weather API error");
@@ -78,7 +77,7 @@ async function fetchWeatherByLocation(latitude, longitude) {
 async function fetchWeatherByCityName(cityName) {
         let response;
         try {
-                response = await fetch(`${baseUrl}?q=${cityName}&appid=${apiKey}`);
+                response = await fetch(`${baseUrl}/weather/city?q=${cityName}`);
 
         } catch (error) {
                 console.log(`Unable to fetch weather: ${error.message}`)
@@ -96,22 +95,12 @@ async function fetchWeatherByCityName(cityName) {
         }
 
         const data = await response.json();
-
         return parseWeatherData(data);
 }
 
 function parseWeatherData(data) {
-        properties = new WeatherProperties();
-        properties.cityName = data.name;
-        properties.tempreture = Math.round(data.main.temp - 273);
-        properties.windSpeed = data.wind.speed;
-        properties.windDirection = windDirection(data.wind.deg);
-        properties.clouds = data.clouds.all;
-        properties.pressure = data.main.pressure;
-        properties.humidity = data.main.humidity;
-        properties.location = new Location(data.coord.lat, data.coord.lon);
-        properties.iconUrl = `https://openweathermap.org/img/wn/${data.weather[0]['icon']}@2x.png`;
-        return properties;
+        data.location = Object.assign(new Location, data.location)
+        return Object.assign(new WeatherProperties, data);
 }
 
 function windDirection(deg) {
