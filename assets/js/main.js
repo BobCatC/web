@@ -7,12 +7,6 @@ class Location {
         }
 }
 
-class LocalData {
-        constructor(cities) {
-                this.cities = cities
-        }
-}
-
 class WeatherProperties {
         constructor() {
 
@@ -77,7 +71,7 @@ async function fetchWeatherByLocation(latitude, longitude) {
 async function fetchWeatherByCityName(cityName) {
         let response;
         try {
-                response = await fetch(`${baseUrl}/weather/city?q=${cityName}`);
+                response = await fetch(`${baseUrl}/weather/city?q=${cityName}`, { credentials: "same-origin" });
 
         } catch (error) {
                 console.log(`Unable to fetch weather: ${error.message}`)
@@ -145,49 +139,47 @@ function getLocation(handler) {
 
 // MARK: - LocalStorage
 
-LocalData.key = 'local-data';
+const tokenHeader = 'X-Auth-Token'
 
-function getLocalData() {
-        localData = localStorage.getItem(LocalData.key);
-        if (localData == undefined) {
-                localData = new LocalData([]);
-        } else {
-                localData = Object.assign(new LocalData, JSON.parse(localData));
+async function addCityToFavorites(cityName) {
+        const params = new URLSearchParams({ cityName: cityName })
+        const headers = createTokenHeaders()
+        const response = await fetch(`${baseUrl}/favorites?` + params, { method: 'POST', headers: headers })
+        return await extractAndSaveToken(response)
+}
+
+async function getFavoriteCities() {
+        const headers = createTokenHeaders()
+        const response = await fetch(`${baseUrl}/favorites`, { headers: headers })
+        return await extractAndSaveToken(response)
+}
+
+async function deleteCityFromFavorites(cityName) {
+        const params = new URLSearchParams({ cityName: cityName })
+        const headers = createTokenHeaders()
+        const response = await fetch(`${baseUrl}/favorites?` + params, { method: 'DELETE', headers: headers })
+        return await extractAndSaveToken(response)
+}
+
+function extractAndSaveToken(response) {
+        const token = response.headers.get('X-Auth-Token')
+        if (token != undefined) {
+                localStorage.setItem('token', token)
         }
-        return localData;
+        return response
 }
 
-function setLocalData(localData) {
-        localData = JSON.stringify(localData);
-        localStorage.setItem(LocalData.key, localData);
+function getToken() {
+        return localStorage.getItem('token')
 }
 
-function cleanLocalData() {
-        localStorage.removeItem(LocalData.key);
-}
-
-function prepareCityNameForSave(cityName) {
-        return cityName.toLowerCase();
-}
-
-function addCityToLocalData(cityName) {
-        cityName = prepareCityNameForSave(cityName);
-        localData = getLocalData();
-        localData.cities.push(cityName);
-        setLocalData(localData);
-}
-
-function removeCityFromLocalData(cityName) {
-        cityName = prepareCityNameForSave(cityName);
-        localData = getLocalData();
-        localData.cities = localData.cities.remove(cityName);
-        setLocalData(localData);
-}
-
-function cityExistsInLocalData(cityName) {
-        cityName = prepareCityNameForSave(cityName);
-        localData = getLocalData();
-        return localData.cities.includes(cityName);
+function createTokenHeaders() {
+        const token = getToken()
+        let headers = {}
+        if (token != undefined) {
+                headers[tokenHeader] = token
+        }
+        return headers
 }
 
 // MARK: - Actions
@@ -198,13 +190,32 @@ function addFavoriteCityButtonDidTap(event) {
         cityName = input.value;
         input.value = "";
 
-        if (cityExistsInLocalData(cityName)) {
-                alert('Already in favorites!');
-                return;
-        }
+        loadingCityUI = createLoadingCityUI(cityName);
+        updateFavoriteCity(cityName, loadingCityUI);
 
-        addCityToLocalData(cityName);
-        addFavoriteCity(cityName);
+        addCityToFavorites(cityName)
+                .then(response => {
+                        if (response.status == 404) {
+                                alert('Wrong city name')
+                                throw new Error(`Wrong city name: ${cityName}`)
+                        }
+
+                        if (response.status == 409) {
+                                alert('Already in Favorites!')
+                                throw new Error(`Trying to add favorite city to favorites again`)
+                        }
+
+                        if (response.status != 200) {
+                                alert('Unexpected weather API error')
+                                throw new Error(`Unexpected API response status: ${response.status}`)
+                        }
+
+                        addFavoriteCity(cityName)
+                })
+                .catch(error => {
+                        console.log(`Error during adding favorite city: ${error.message}`)
+                        removeFavoriteCity(cityName);
+                })
 }
 
 function reloadLocationButtonDidTap(event) {
@@ -223,7 +234,7 @@ function replaceDocumentElement(query, html) {
 }
 
 function idForCity(cityName) {
-        return `${cityName.replace(' ', '')}-city`;
+        return `${cityName.replace(' ', '')}-city`.toLowerCase();
 }
 
 function updateCurrentCity() {
@@ -242,14 +253,23 @@ function updateCurrentCityWithProperties(properties) {
 }
 
 function updateFavoriteCities() {
-        localData = getLocalData();
-        console.log(`Creating UI for cities: ${localData.cities}`)
-        localData.cities.forEach(addFavoriteCity);
+        getFavoriteCities()
+                .then(response => {
+                        if (response.status != 200) {
+                                alert('Unexpected weather API error')
+                                throw new Error(`Unexpected API response status: ${response.status}`)
+                        }
+
+                        return response
+                })
+                .then(response => response.json())
+                .then(data => {
+                        console.log(`Response of favorites: ${data}`)
+                        data.forEach(addFavoriteCity)
+                })
 }
 
 function addFavoriteCity(cityName) {
-        loadingCityUI = createLoadingCityUI(cityName);
-        updateFavoriteCity(cityName, loadingCityUI);
         fetchWeatherByCityName(cityName)
                 .then(properties => {
                         cityUI = createCityUI(properties);
@@ -277,7 +297,7 @@ function updateFavoriteCity(cityName, cityUI) {
 
 function removeFavoriteCity(cityName) {
         document.querySelector('#' + idForCity(cityName)).remove();
-        removeCityFromLocalData(cityName);
+        deleteCityFromFavorites(cityName)
 }
 
 // MARK: - UI
