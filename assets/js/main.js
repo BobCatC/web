@@ -47,7 +47,7 @@ Array.prototype.remove = function (item) {
 
 // MARK: - Weather API
 
-baseUrl = 'http://31.31.202.105:1337';
+baseUrl = 'https://web.ip-kharisova.ru:1338';
 
 async function fetchWeatherByLocation(latitude, longitude) {
         let response;
