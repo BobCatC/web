@@ -30,7 +30,7 @@ module.exports.security = {
 
   cors: {
     allRoutes: true,
-    allowOrigins: ['http://127.0.0.1:5500'],
+    allowOrigins: ['http://127.0.0.1:5500', 'https://bobcatc.github.io'],
     allowRequestHeaders: 'X-Auth-Token',
     allowResponseHeaders: 'X-Auth-Token',
     allowCredentials: false,
