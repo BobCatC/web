@@ -47,7 +47,7 @@ Array.prototype.remove = function (item) {
 
 // MARK: - Weather API
 
-baseUrl = 'http://localhost:1337';
+baseUrl = 'http://31.31.202.105:1337';
 
 async function fetchWeatherByLocation(latitude, longitude) {
         let response;
