@@ -25,8 +25,8 @@ module.exports = {
   fn: async function ({ q }, exits) {
     sails.log.info(`Get weather by city name with q=${q}`)
 
-    apiKey = 'c49aa141b23994b2563a6b32d32893b1';
-    baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
+    const baseUrl = sails.config.weatherApi.baseUrl
+    const apiKey = sails.config.weatherApi.key
 
     let response
     try {

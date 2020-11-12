@@ -11,10 +11,12 @@ module.exports = {
   },
 
   fn: async function ({req, res}) {
-    let userToken = req.signedCookies.userToken;
+    // let userToken = req.cookies.userToken;
+    userToken = req.get('X-Auth-Token')
     let user = await sails.helpers.getUserByToken(userToken);
     sails.log.info(user);
-    res.cookie('userToken', user.cookies, {signed: true});
+    // res.cookie('userToken', user.cookies, {httpOnly: true, domain: 'http://localhost:1337'});
+    res.set('X-Auth-Token', user.cookies)
     return user;
   }
 };

@@ -17,11 +17,19 @@ module.exports = {
     },
     success: {
       statusCode: 200
+    },
+    cityDoesNotExist: {
+      statusCode: 404
     }
   },
 
   fn: async function ({cityName}, exits, env) {
     sails.log.info(`Add ${cityName} to favorites`)
+
+    const found = await sails.helpers.cityExists(cityName)
+    if (!found) {
+      return exits.cityDoesNotExist()
+    }
 
     let user = await sails.helpers.getSessionUser(env.req, env.res);
     cityName = await sails.helpers.formatCityName(cityName);
