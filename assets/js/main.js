@@ -350,7 +350,3 @@ function createWeatherPropertiesListUI(properties) {
 document.querySelector('.update-button').addEventListener('click', reloadLocationButtonDidTap);
 document.querySelector('.update-button-mobile').addEventListener('click', reloadLocationButtonDidTap);
 document.querySelector('.add-city').addEventListener('submit', addFavoriteCityButtonDidTap);
-
-// cleanLocalData();
-updateCurrentCity();
-updateFavoriteCities();
