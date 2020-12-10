@@ -83,11 +83,14 @@
     </template>
 </body>
 
-<script src="assets/js/main.js"></script>
-<script>
-    // cleanLocalData();
-    updateCurrentCity();
-    updateFavoriteCities();
+<!-- <script type="module" src="assets/js/main.js"></script> -->
+<script type="module">
+    import * as main from './assets/js/main.js'
+    main.bindDocumentEvents(document)
+    main.setupWeatherApiStorage()
+    // cleanLocalData()
+    main.updateCurrentCity()
+    main.updateFavoriteCities()
 </script>
 
 </html>
