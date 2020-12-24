@@ -49,4 +49,6 @@ module.exports.globals = {
 
   sails: true,
 
+  fetch: require('node-fetch')
+
 };

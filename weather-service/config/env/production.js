@@ -337,6 +337,8 @@ module.exports = {
 
   },
 
-
+  sockets: {
+    onlyAllowOrigins: []
+  }
 
 };

@@ -53,5 +53,8 @@ module.exports.datastores = {
 
   },
 
+  test: {
+    adapter: 'sails-disk'
+  }
 
 };

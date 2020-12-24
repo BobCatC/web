@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 module.exports = {
 
 
@@ -38,14 +36,14 @@ module.exports = {
 
     let response
     try {
-      response = await fetch(`${baseUrl}?lat=${lat}&lon=${lon}&appid=${apiKey}`);
+      response = await sails.config.globals.fetch(`${baseUrl}?lat=${lat}&lon=${lon}&appid=${apiKey}`);
     } catch (error) {
       sails.log.warn(`Unable to fetch weather: ${error.message}`);
       return exits.unableToFetchWeather()
     }
 
     if (response.status != 200) {
-      sails.log.warn(`Unexpected non-ok weather request status: ${error.message}`);
+      sails.log.warn(`Unexpected non-ok weather request status: ${response.status}`);
       return exits.unableToFetchWeather()
     }
 

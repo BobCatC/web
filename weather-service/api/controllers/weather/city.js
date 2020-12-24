@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 module.exports = {
   friendlyName: 'City',
 
@@ -30,7 +28,7 @@ module.exports = {
 
     let response
     try {
-      response = await fetch(`${baseUrl}?q=${q}&appid=${apiKey}`);
+      response = await sails.config.globals.fetch(`${baseUrl}?q=${q}&appid=${apiKey}`);
     } catch (error) {
       console.log(`Unable to fetch weather: ${error.message}`)
       return exits.unableToFetchWeather()
