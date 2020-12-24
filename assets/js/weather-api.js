@@ -1,7 +1,6 @@
 import * as location from './location.js'
 
-// const baseUrl = 'https://web.ip-kharisova.ru:1338'
-const baseUrl = 'http://127.0.0.1:1337'
+const baseUrl = 'https://web.ip-kharisova.ru:1338'
 const tokenHeader = 'X-Auth-Token'
 var storage
 
